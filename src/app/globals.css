@@ -1,0 +1,365 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --surface-canvas: #f6f8fb;
+  --surface-card: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --ink-primary: #0f172a;
+  --ink-secondary: #334155;
+  --ink-muted: #475569;
+  --border-subtle: #dbe3ee;
+  --border-control: #738297;
+  --brand-primary: #1d4ed8;
+  --brand-primary-hover: #1e40af;
+  --brand-soft: #eff6ff;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html {
+  background-color: var(--surface-canvas);
+  color: var(--ink-primary);
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--surface-canvas);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular numbers utility for zero horizontal jitter while scrubbing sliders */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fluid responsive headings (max <= 2.5 * min for WCAG 1.4.4 200% zoom compliance) */
+.fluid-page-title {
+  font-size: clamp(1.45rem, 1.15rem + 1.25vw, 2.15rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.fluid-kpi-figure {
+  font-size: clamp(2rem, 1.55rem + 1.8vw, 2.85rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.fluid-metric-figure {
+  font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+/* Canonical visually-hidden utility (keeps focusable skip links visible on focus) */
+.visually-hidden:where(:not(:focus-within, :active)) {
+  position: absolute !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
+.skip-link:focus-visible {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 60;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-weight: 600;
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* Accessible focus-visible indicator across buttons and links */
+:where(a:any-link, button, summary):focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
+}
+
+/* Container queries for right dashboard and CTA grid */
+.results-container {
+  container-type: inline-size;
+}
+
+.results-two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@container (min-width: 34rem) {
+  .results-two-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.kpi-split-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@container (min-width: 28rem) {
+  .kpi-split-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    align-items: end;
+  }
+}
+
+/* Numeric input styling (>=1rem prevents iOS zoom, >=48px target height, >=3:1 border contrast) */
+.fintech-numeric-wrap {
+  display: flex;
+  align-items: center;
+  min-block-size: 48px;
+  border-radius: 0.625rem;
+  border: 1.5px solid var(--border-control);
+  background-color: #ffffff;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.fintech-numeric-wrap:hover {
+  border-color: #334155;
+}
+
+.fintech-numeric-wrap:focus-within {
+  border-color: var(--brand-primary);
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 1px;
+}
+
+.fintech-numeric-input {
+  font: inherit;
+  font-size: max(1rem, 1em);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--ink-primary);
+  background: transparent;
+  border: 0;
+  width: 100%;
+  min-block-size: 44px;
+  padding-inline: 0.5rem;
+  text-align: end;
+  outline: none;
+}
+
+@media (pointer: coarse) {
+  .fintech-numeric-wrap {
+    min-block-size: 52px;
+  }
+
+  .fintech-numeric-input {
+    min-block-size: 48px;
+  }
+}
+
+/* ==========================================================================
+   Modern Native Range Slider (Brand-Consistent, Cross-Browser, WCAG >= 3:1)
+   - Uses progress() with @supports calc() fallback
+   - Separate WebKit and Firefox pseudo-element blocks (never comma-combined)
+   ========================================================================== */
+input[type="range"].fintech-slider {
+  --slider-track-size: 0.4375rem;
+  --slider-thumb-size: 1.375rem;
+  --slider-track-radius: 999px;
+  --slider-thumb-radius: 50%;
+  /* #818fa3 on #ffffff achieves ~3.26:1 non-text contrast (WCAG 1.4.11 >= 3:1) */
+  --slider-track-color: #818fa3;
+  --slider-fill-color: #1d4ed8;
+  --slider-thumb-color: #1d4ed8;
+  --slider-direction: to right;
+
+  --attr-min: attr(min type(<number>), 0);
+  --attr-max: attr(max type(<number>), 100);
+  --control-value: attr(value type(<number>), 50);
+  --slider-progress: calc(
+    progress(var(--control-value), var(--attr-min), var(--attr-max)) * 100%
+  );
+
+  appearance: none;
+  -webkit-appearance: none;
+  inline-size: 100%;
+  block-size: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+input[type="range"].fintech-slider:dir(rtl) {
+  --slider-direction: to left;
+}
+
+@supports not (opacity: progress(1, 0, 100)) {
+  input[type="range"].fintech-slider {
+    --slider-progress: calc(
+      (var(--control-value) - var(--attr-min)) /
+        (var(--attr-max) - var(--attr-min)) * 100%
+    );
+  }
+}
+
+@media (pointer: coarse) {
+  input[type="range"].fintech-slider {
+    --slider-thumb-size: 1.625rem;
+    block-size: 3rem;
+  }
+}
+
+input[type="range"].fintech-slider:focus-visible {
+  outline: 2px solid var(--slider-fill-color);
+  outline-offset: 4px;
+}
+
+/* WebKit / Blink track and thumb */
+input[type="range"].fintech-slider::-webkit-slider-runnable-track {
+  block-size: var(--slider-track-size);
+  border: 0;
+  border-radius: var(--slider-track-radius);
+  background: linear-gradient(
+    var(--slider-direction),
+    var(--slider-fill-color) var(--slider-progress),
+    var(--slider-track-color) var(--slider-progress)
+  );
+}
+
+input[type="range"].fintech-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  inline-size: var(--slider-thumb-size);
+  block-size: var(--slider-thumb-size);
+  margin-block-start: calc(
+    (var(--slider-track-size) - var(--slider-thumb-size)) / 2
+  );
+  border: 3px solid #ffffff;
+  border-radius: var(--slider-thumb-radius);
+  background: var(--slider-thumb-color);
+  box-shadow: 0 1px 4px rgb(15 23 42 / 0.28), 0 0 0 1px rgb(29 78 216 / 0.35);
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+input[type="range"].fintech-slider:hover::-webkit-slider-thumb {
+  background: var(--brand-primary-hover);
+  transform: scale(1.08);
+}
+
+input[type="range"].fintech-slider:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+/* Firefox track, progress, and thumb */
+input[type="range"].fintech-slider::-moz-range-track {
+  block-size: var(--slider-track-size);
+  border: 0;
+  border-radius: var(--slider-track-radius);
+  background: var(--slider-track-color);
+}
+
+input[type="range"].fintech-slider::-moz-range-progress {
+  block-size: var(--slider-track-size);
+  border-radius: var(--slider-track-radius);
+  background: var(--slider-fill-color);
+}
+
+input[type="range"].fintech-slider::-moz-range-thumb {
+  inline-size: var(--slider-thumb-size);
+  block-size: var(--slider-thumb-size);
+  border: 3px solid #ffffff;
+  border-radius: var(--slider-thumb-radius);
+  background: var(--slider-thumb-color);
+  box-shadow: 0 1px 4px rgb(15 23 42 / 0.28), 0 0 0 1px rgb(29 78 216 / 0.35);
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+input[type="range"].fintech-slider:hover::-moz-range-thumb {
+  background: var(--brand-primary-hover);
+  transform: scale(1.08);
+}
+
+/* Native <dialog> styling */
+dialog.fintech-dialog {
+  margin: auto;
+  max-inline-size: min(34rem, calc(100vw - 2rem));
+  inline-size: 100%;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  background-color: #ffffff;
+  color: var(--ink-primary);
+  box-shadow: 0 24px 60px rgb(15 23 42 / 0.22);
+}
+
+dialog.fintech-dialog::backdrop {
+  background-color: rgb(15 23 42 / 0.55);
+  backdrop-filter: blur(2px);
+}
+
+/* High Contrast / Forced Colors Mode support */
+@media (forced-colors: active) {
+  input[type="range"].fintech-slider::-webkit-slider-runnable-track {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+
+  input[type="range"].fintech-slider::-webkit-slider-thumb {
+    border: 2px solid CanvasText;
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  input[type="range"].fintech-slider::-moz-range-track {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+
+  input[type="range"].fintech-slider::-moz-range-progress {
+    background: Highlight;
+  }
+
+  input[type="range"].fintech-slider::-moz-range-thumb {
+    border: 2px solid CanvasText;
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  .stacked-bar-segment {
+    border: 1px solid CanvasText;
+  }
+
+  .health-badge {
+    border: 2px solid CanvasText;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
