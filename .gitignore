@@ -5,3 +5,7 @@ out/
 .env*.local
 *.tsbuildinfo
 next-env.d.ts
+
+# Mantener la plantilla de pago fuera del repositorio público
+*.xlsx
+scripts/generar_plantilla_skus.py

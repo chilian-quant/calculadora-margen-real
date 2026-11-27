@@ -14,7 +14,7 @@ export const CTA_CONFIG = {
   excelTemplateUrl: process.env.NEXT_PUBLIC_EXCEL_TEMPLATE_URL || "",
 
   /** Precio referencial de la plantilla (MXN) */
-  excelTemplatePriceMxn: 299,
+  excelTemplatePriceMxn: 249,
 
   /** Clave versionada en localStorage para persistir un número wa.me personalizado */
   whatsappStorageKey: "margen-real:whatsapp-number:v1",

@@ -25,11 +25,11 @@ interface ConversionSectionProps {
 }
 
 const EXCEL_FEATURES = [
-  "Control centralizado de hasta 200+ SKUs en un solo libro",
-  "Tablas preconfiguradas para Mercado Libre, Amazon, Shopify y venta directa",
-  "Semáforo automático de salud por producto (<10%, 10%–19.9%, ≥20%)",
-  "Simulador masivo de incrementos de precio (+5%, +10%, +15%) y descuentos",
-  "Tablero ejecutivo de punto de equilibrio consolidado mensual",
+  "Pestaña 1_Parametros: margen objetivo, gastos fijos, comisiones por canal y tiempos de resurtido",
+  "Pestaña 2_Catalogo_Margenes: tabla estructurada multi-SKU con utilidad libre, precio sugerido y alerta de banda $299 en Mercado Libre",
+  "Pestaña 3_Inventario_Reorden: días de inventario, punto exacto de reorden, alertas PEDIR HOY y capital inmovilizado",
+  "Pestaña 4_Dashboard_Ejecutivo: 5 tarjetas de KPIs clave + 2 gráficos automáticos (Top 10 por utilidad y salud del catálogo)",
+  "Compatible con Microsoft Excel y Google Sheets con semáforo condicional automático y 8 SKUs de ejemplo",
 ] as const;
 
 export function ConversionSection({
